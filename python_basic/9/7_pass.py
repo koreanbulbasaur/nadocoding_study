@@ -48,11 +48,12 @@ class FlyableAttackUnit(AttackUnit, Flyable):
         print("[공중 유닛 이동]")
         self.fly(self.name, location)
 
+# 건물
 
-vulture = AttackUnit("벌쳐", 80, 10, 20)
 
-battlecruiser = FlyableAttackUnit("배틀크루저", 500, 25, 3)
+class BuildingUnit(Unit):
+    def __init__(self, name, hp, location):
+        pass
 
-vulture.move("11시")
-# battlecruiser.fly(battlecruiser.name, "9시")
-battlecruiser.move("10시")
+
+supply_depot = BuildingUnit("서플라이 디폿", 500, "7시")
