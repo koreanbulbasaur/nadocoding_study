@@ -5,6 +5,7 @@ from tmdbv3api import Movie, TMDb
 movie = Movie()
 tmdb = TMDb()
 tmdb.api_key = '60253fee74455f6316932b26820c3aad'
+tmdb.language = 'ko-KR'
 
 def get_recommendations(title):
     idx = movies[movies['title'] == title].index[0]
@@ -17,6 +18,22 @@ def get_recommendations(title):
 
     movie_indices = [i[0] for i in sim_scores]
 
+    images = []
+    titles = []
+    for i in movie_indices:
+        id = movies['id'].iloc[i]
+        detail = movie.details(id)
+
+        image_path = detail['poster_path']
+        if image_path:
+            image_path = 'https://image.tmdb.org/t/p/w500' + image_path
+        else:
+            image_path = 'no_image.jpg'
+        images.append(image_path)
+        titles.append(detail['title'])
+
+    return images, titles
+
 movies = pickle.load(open('movies.pickle', 'rb'))
 cosine_sim = pickle.load(open('cosine_sim.pickle', 'rb'))
 
@@ -26,4 +43,13 @@ st.header('Vitoflix')
 movie_list = movies['title'].values
 title = st.selectbox('Choose a movie you like', movie_list)
 if st.button('Recommend'):
-    images, titles = get_recommendations(title)
+    with st.spinner('Please wait...'):
+        images, titles = get_recommendations(title)
+
+        idx = 0
+        for i in range(0, 2):
+            cols = st.columns(5)
+            for col in cols:
+                col.image(images[idx])
+                col.write(titles[idx])
+                idx += 1
